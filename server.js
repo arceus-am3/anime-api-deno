@@ -15,10 +15,17 @@ const __filename = fileURLToPath(import.meta.url);
 const publicDir = path.join(dirname(__filename), "public");
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",");
 
+// Body parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Express CORS setup
 app.use(
   cors({
     origin: allowedOrigins?.includes("*") ? "*" : allowedOrigins || [],
-    methods: ["GET"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
@@ -31,8 +38,15 @@ app.use((req, res, next) => {
     (origin && allowedOrigins.includes(origin))
   ) {
     res.setHeader("Access-Control-Allow-Origin", origin || "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+    
     return next();
   }
   res
@@ -50,7 +64,7 @@ const jsonError = (res, message = "Internal server error", status = 500) =>
 
 createApiRoutes(app, jsonResponse, jsonError);
 
-app.use((req, res) => {
+app.get("*", (req, res) => {
   const filePath = path.join(publicDir, "404.html");
   if (fs.existsSync(filePath)) {
     res.status(404).sendFile(filePath);
