@@ -1,0 +1,13 @@
+{
+  "tasks": {
+    "start": "deno run --allow-net --allow-env --allow-read deno-entry.js"
+  },
+  "compilerOptions": {
+    "lib": ["ESNext"]
+  },
+  "imports": {
+    "axios": "npm:axios@1.6.7",
+    "cheerio": "npm:cheerio@1.0.0-rc.12"
+  },
+  "nodeModulesDir": "auto"
+}
