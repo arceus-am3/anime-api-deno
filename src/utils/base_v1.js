@@ -1,2 +1,3 @@
-export const v1_base_url = "hianimez.is";
+export const v1_base_url = "hianimez.to";
 // hianimez.is
+
